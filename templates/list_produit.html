@@ -30,6 +30,13 @@
                 <a href="{{ url_for('add_from_produit') }}" class="btn btn-sm btn-success">ajoute</a>
             </div>
 
+            <div class="d-flex align-items-center mb-4">
+                <form method="post" action="/import_produit_excel" enctype="multipart/form-data">
+                    <input type="file" name="fichier" accept=".xlsx, .xls">
+                    <input type="submit" value="Importer">
+                </form>      
+            </div>
+
             <div class="table-responsive mb-3">
                 <table class="table text-start align-middle table-bordered table-hover mb-0">
                     <thead>

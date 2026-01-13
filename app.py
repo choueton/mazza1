@@ -544,6 +544,72 @@ def export_stock_excel():
 
 #########################################################################
 
+@app.route('/import_magasin_excel', methods=['POST'])
+def import_magasin_excel():
+    if 'fichier_excel' not in request.files:
+        flash("Aucun fichier sélectionné")
+        return redirect(url_for('listemagasin'))
+    
+    fichier = request.files['fichier_excel']
+    
+    # Lecture du fichier Excel
+    wb = openpyxl.load_workbook(fichier)
+    ws = wb.active
+
+    # Extraction des données
+    data = []
+    for row in ws.iter_rows(values_only=True):
+        data.append(row)
+
+    # Connexion à la base de données
+    cur = mysql.connection.cursor()
+
+    # Insertion des données dans la table SQL
+    for row in data:
+        query = "INSERT INTO magasin (nom, adresse) VALUES (%s, %s)"
+        cur.execute(query, (row[1], row[2]))
+
+    # Validation et enregistrement des modifications dans la base de données
+    mysql.connection.commit()
+    cur.close()
+    flash("Importation réussie")
+    return redirect(url_for('listemagasin'))
+
+
+
+@app.route('/import_produit_excel', methods=['POST'])
+def import_produit_excel():
+    if 'fichier_excel' not in request.files:
+        flash("Aucun fichier sélectionné")
+        return redirect(url_for('list_produit'))
+
+    fichier = request.files['fichier_excel']
+
+    # Lecture du fichier Excel
+    wb = openpyxl.load_workbook(fichier)
+    ws = wb.active
+
+    # Extraction des données
+    data = []
+    for row in ws.iter_rows(values_only=True):
+        data.append(row)
+
+    # Connexion à la base de données
+    cur = mysql.connection.cursor()
+
+    # Insertion des données dans la table SQL
+    for row in data:
+        query = "INSERT INTO produit (nom, prix, description) VALUES (%s, %s, %s)"
+        cur.execute(query, (row[1], row[2], row[3]))
+
+    # Validation et enregistrement des modifications dans la base de données
+    mysql.connection.commit()
+    cur.close()
+
+    flash("Importation réussie")
+    return redirect(url_for('list_produit'))
+
+
 # Correction de la fonction de récupération du nom de produit et de magasin
 def get_nom_produit(id_produit):
     if id_produit:
